@@ -205,6 +205,7 @@ function HomePage() {
   const moreImage = projects.find((project) => project.image !== caseImage)?.image
 
   return (
+    <>
     <div className="page">
 
       <section className="hero">
@@ -245,7 +246,6 @@ function HomePage() {
       </div>
 
       <SynergyVariantOne />
-      <SiteFooter cta />
       <CaseStudy
         open={Boolean(caseImage)}
         image={caseImage}
@@ -253,5 +253,7 @@ function HomePage() {
         onClose={() => setCaseImage(null)}
       />
     </div>
+    <SiteFooter cta />
+    </>
   )
 }

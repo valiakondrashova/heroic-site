@@ -99,8 +99,19 @@ export function CtaRing() {
 
 export function CtaLandscape() {
   return (
-    <section className="cta-land" aria-hidden="true">
-      <ReelFrame className="cta-land-bg" title="Heroic showreel" clipSeconds={12} />
+    <section className="cta-land" aria-label="Start your journey with Heroic">
+      <ReelFrame className="cta-land-bg" title="Heroic showreel" clipSeconds={5} />
+      <div className="cta-land-bar">
+        <div className="footer-journey">
+          <p>Start your journey with Heroic</p>
+          <Link className="footer-touch" href="/contact">
+            Get in touch
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+              <path d="M1 5H13M13 5L9 1M13 5L9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
+        </div>
+      </div>
     </section>
   )
 }
