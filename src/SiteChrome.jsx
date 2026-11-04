@@ -179,7 +179,7 @@ function ReviewLinks() {
   )
 }
 
-export function SiteFooter({ variant = 'brand', cta = false }) {
+export function SiteFooter({ variant = 'journey', cta = false }) {
   const brand = variant === 'brand'
 
   return (

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const VIDEO_ID = '1102458841'
 
@@ -19,9 +19,9 @@ function loadPlayerApi() {
   return playerApi
 }
 
-export function reelSrc({ start } = {}) {
+export function reelSrc({ start, autoplay = true } = {}) {
   const params = new URLSearchParams({
-    autoplay: '1',
+    autoplay: autoplay ? '1' : '0',
     loop: '1',
     muted: '1',
     controls: '0',
@@ -73,6 +73,7 @@ export function useReel(iframeRef, { clipSeconds, start, end } = {}) {
         const arm = () => {
           if (dead) return
           player.setMuted(true).catch(() => {})
+          player.setAutopause(false).catch(() => {})
           player.getCurrentTime().then((seconds) => {
             if (dead) return
             const inside = seconds >= from && (to == null || seconds < to)
@@ -154,15 +155,45 @@ function ReelSingle({ className, title, clipSeconds, start, end, fit, labelled }
   return frame
 }
 
-// Two players so a one-second loop cuts forward instead of scrubbing backward.
-function ReelCut({ className, title, start, end, labelled }) {
+function bindStage(stage, onChange) {
+  if (!stage) return () => {}
+  let last = null
+  const update = () => {
+    const menu = stage.closest('.menu')
+    const rect = stage.getBoundingClientRect()
+    const visible = (!menu || menu.classList.contains('menu--open'))
+      && rect.width > 0
+      && rect.height > 0
+      && rect.bottom > 0
+      && rect.top < window.innerHeight
+    if (visible === last) return
+    last = visible
+    onChange(visible)
+  }
+  const observer = new IntersectionObserver(update, { threshold: [0, 0.01, 0.25] })
+  observer.observe(stage)
+  const menu = stage.closest('.menu')
+  const menuObserver = menu ? new MutationObserver(update) : null
+  menuObserver?.observe(menu, { attributes: true, attributeFilter: ['class'] })
+  window.addEventListener('scroll', update, true)
+  window.addEventListener('resize', update)
+  update()
+  return () => {
+    observer.disconnect()
+    menuObserver?.disconnect()
+    window.removeEventListener('scroll', update, true)
+    window.removeEventListener('resize', update)
+  }
+}
+
+function ReelPair({ title, start, end, labelled }) {
   const firstRef = useRef(null)
   const secondRef = useRef(null)
 
   useEffect(() => {
+    const nodes = [firstRef.current, secondRef.current]
     let dead = false
     let players = []
-    const nodes = [firstRef.current, secondRef.current]
     let active = 0
     let busy = false
 
@@ -178,15 +209,17 @@ function ReelCut({ className, title, start, end, labelled }) {
           return
         }
 
+        let readyCount = 0
         players.forEach((player, index) => {
+          player.setAutopause(false).catch(() => {})
           player.ready().then(() => {
             if (dead) return
             player.setMuted(true).catch(() => {})
-            if (index === 0) {
-              player.setCurrentTime(start).then(() => player.play()).catch(() => player.play().catch(() => {}))
-            } else {
-              park(player)
-            }
+            player.setAutopause(false).catch(() => {})
+            readyCount += 1
+            if (readyCount < players.length) return
+            players[0].setCurrentTime(start).then(() => players[0].play()).catch(() => players[0].play().catch(() => {}))
+            park(players[1])
           }).catch(() => {})
 
           player.on('timeupdate', ({ seconds }) => {
@@ -194,15 +227,17 @@ function ReelCut({ className, title, start, end, labelled }) {
             busy = true
             const next = index ^ 1
             const standby = players[next]
-            standby.play()
-              .then(() => standby.getCurrentTime())
+            standby.getCurrentTime()
               .then((at) => {
                 if (dead) return
-                if (at > start + 0.45) return park(standby)
-                nodes[index].style.visibility = 'hidden'
-                nodes[next].style.visibility = ''
-                active = next
-                return park(player)
+                if (at > start + 0.35) return park(standby)
+                return standby.play().then(() => {
+                  if (dead) return
+                  nodes[index].style.visibility = 'hidden'
+                  nodes[next].style.visibility = ''
+                  active = next
+                  return park(player)
+                })
               })
               .catch(() => {})
               .finally(() => {
@@ -223,7 +258,7 @@ function ReelCut({ className, title, start, end, labelled }) {
   }, [start, end])
 
   return (
-    <div className={`reel-stage${className ? ` ${className}` : ''}`}>
+    <>
       <iframe
         ref={firstRef}
         className="reel-fit"
@@ -237,14 +272,36 @@ function ReelCut({ className, title, start, end, labelled }) {
         {...iframeProps('', false)}
         style={{ visibility: 'hidden' }}
       />
+    </>
+  )
+}
+
+// Two players so a short loop cuts forward instead of scrubbing backward through frames.
+function ReelCut({ className, title, start, end, labelled }) {
+  const stageRef = useRef(null)
+  const [shown, setShown] = useState(false)
+
+  useEffect(() => bindStage(stageRef.current, setShown), [])
+
+  return (
+    <div ref={stageRef} className={`reel-stage${className ? ` ${className}` : ''}`}>
+      {shown ? <ReelPair title={title} start={start} end={end} labelled={labelled} /> : null}
     </div>
   )
 }
 
 export function ReelFrame({ className, title, clipSeconds, start, end, fit, labelled = false }) {
-  const span = start != null && end != null ? end - start : null
-  if (fit === 'height' && span != null && span <= 1.5) {
-    return <ReelCut className={className} title={title} start={start} end={end} labelled={labelled} />
+  const to = end ?? clipSeconds ?? null
+  if (to != null) {
+    return (
+      <ReelCut
+        className={className}
+        title={title}
+        start={start ?? 0}
+        end={to}
+        labelled={labelled}
+      />
+    )
   }
 
   return (

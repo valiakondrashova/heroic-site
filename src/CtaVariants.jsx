@@ -100,7 +100,7 @@ export function CtaRing() {
 export function CtaLandscape() {
   return (
     <section className="cta-land" aria-label="Start your journey with Heroic">
-      <ReelFrame className="cta-land-bg" title="Heroic showreel" clipSeconds={5} />
+      <ReelFrame fit="height" title="Heroic showreel" clipSeconds={5} />
       <div className="cta-land-bar">
         <div className="footer-journey">
           <p>Start your journey with Heroic</p>
