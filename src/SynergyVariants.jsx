@@ -34,7 +34,7 @@ function BrandCard({ className = '' }) {
   return (
     <div className={`syn-brand ${className}`}>
       <div className="syn-brand-bg">
-        <ReelFrame fit="height" title="" start={29} end={32} />
+        <ReelFrame fit="height" title="" start={15} end={16} />
       </div>
       <img className="syn-brand-logo" src="/assets/r8g-logo.svg" alt="Room 8 Group" />
       <p className="syn-brand-text">{BODY}</p>
