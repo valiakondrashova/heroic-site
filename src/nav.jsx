@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react'
 
+function normalize(path) {
+  if (!path || path === '/' || path === '/index.html') return '/'
+  return path
+}
+
 function readPath() {
   if (window.location.protocol === 'file:') {
     const hash = window.location.hash.slice(1)
-    return hash.startsWith('/') ? hash : '/'
+    return normalize(hash.startsWith('/') ? hash : '/')
   }
-  return window.location.pathname
+  return normalize(window.location.pathname)
 }
 
 export function navigate(to) {
