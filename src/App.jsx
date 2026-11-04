@@ -252,7 +252,7 @@ function HomePage() {
         onClose={() => setCaseImage(null)}
       />
     </div>
-    <SiteFooter cta />
+    <SiteFooter variant="brand" />
     </>
   )
 }
