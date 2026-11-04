@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { jobs } from './CareersVariants.jsx'
 import { Link } from './nav.jsx'
+import { ReelFrame } from './Reel.jsx'
 
 export const TITLE = 'Documentation Support Specialist'
 
@@ -238,6 +239,8 @@ export function ApplyFormVariantOne({
   heading: Heading = 'h2',
   backdrop = true,
   lede = true,
+  clipStart,
+  clipEnd,
 }) {
   const [checks, setChecks] = useConsents()
   const [file, setFile] = useState('')
@@ -246,6 +249,9 @@ export function ApplyFormVariantOne({
     <section className="apv apv-apply" id={id}>
       <div className="apv-apply-grid">
         <div className={`apv-apply-panel${backdrop ? '' : ' apv-apply-panel--plain'}`}>
+          {backdrop && clipStart != null ? (
+            <ReelFrame fit="height" title="" start={clipStart} end={clipEnd} />
+          ) : null}
           <div className="apv-apply-copy">
             <Heading>{title}</Heading>
             {lede ? <p>Together we will bring games to the next level. Exactly with you.</p> : null}

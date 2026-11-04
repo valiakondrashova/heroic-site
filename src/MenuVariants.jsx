@@ -1,3 +1,5 @@
+import { ReelFrame } from './Reel.jsx'
+
 const services = [
   { label: 'Pre- production', href: '/services/pre-production' },
   { label: 'In-game cutscenes', href: '/services/in-game-cutscenes' },
@@ -42,7 +44,7 @@ export function MenuOriginal({ go }) {
       <div className="menu-foot">
         <div className="menu-reel" aria-hidden="true">
           <div className="menu-reel-shot">
-            <img src="/assets/menu-reel.jpg" alt="" />
+            <ReelFrame fit="height" title="" start={40} end={42} />
           </div>
         </div>
         <div className="menu-social">

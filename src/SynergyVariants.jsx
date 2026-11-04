@@ -1,3 +1,5 @@
+import { ReelFrame } from './Reel.jsx'
+
 const LABEL = 'About ROOM 8 GROUP SYNERGY'
 
 const HEADING =
@@ -32,7 +34,7 @@ function BrandCard({ className = '' }) {
   return (
     <div className={`syn-brand ${className}`}>
       <div className="syn-brand-bg">
-        <img src="/assets/synergy-bg.jpg" alt="" />
+        <ReelFrame fit="height" title="" start={29} end={31} />
       </div>
       <img className="syn-brand-logo" src="/assets/r8g-logo.svg" alt="Room 8 Group" />
       <p className="syn-brand-text">{BODY}</p>

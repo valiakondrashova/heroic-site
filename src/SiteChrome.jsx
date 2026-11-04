@@ -133,7 +133,7 @@ function BrandFooter() {
         <div className="footer-left">
           <div className="footer-ring">
             <div className="ring-shot" aria-hidden="true">
-              <ReelFrame title="Heroic showreel" clipSeconds={12} />
+              <ReelFrame fit="height" title="" start={40} end={42} />
             </div>
             <Logo className="site-logo site-logo--footer" />
           </div>

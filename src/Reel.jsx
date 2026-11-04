@@ -19,7 +19,7 @@ function loadPlayerApi() {
   return playerApi
 }
 
-export function reelSrc() {
+export function reelSrc({ start } = {}) {
   const params = new URLSearchParams({
     autoplay: '1',
     loop: '1',
@@ -34,26 +34,40 @@ export function reelSrc() {
     playsinline: '1',
     background: '1',
   })
-  return `https://player.vimeo.com/video/${VIDEO_ID}?${params}`
+  const hash = start ? `#t=${start}s` : ''
+  return `https://player.vimeo.com/video/${VIDEO_ID}?${params}${hash}`
 }
 
-export function useReel(iframeRef, { clipSeconds } = {}) {
+export function useReel(iframeRef, { clipSeconds, start, end } = {}) {
   const playerRef = useRef(null)
 
   useEffect(() => {
     let dead = false
     let player = null
+    const from = start ?? 0
+    const to = end ?? clipSeconds ?? null
 
     loadPlayerApi()
       .then((Vimeo) => {
         if (dead || !iframeRef.current) return
         player = new Vimeo.Player(iframeRef.current)
         playerRef.current = player
-        player.setMuted(true).catch(() => {})
-        player.play().catch(() => {})
-        if (clipSeconds) {
+        const arm = () => {
+          player.setMuted(true).catch(() => {})
+          if (from) player.setCurrentTime(from).catch(() => {})
+          player.play().catch(() => {})
+        }
+        player.ready().then(arm).catch(arm)
+        if (to != null) {
+          let nextJump = 0
+          const jump = () => {
+            const now = performance.now()
+            if (now < nextJump) return
+            nextJump = now + 800
+            player.setCurrentTime(from).catch(() => {})
+          }
           player.on('timeupdate', ({ seconds }) => {
-            if (seconds >= clipSeconds) player.setCurrentTime(0).catch(() => {})
+            if (seconds >= to - 0.08 || (from > 0 && seconds < from - 0.45)) jump()
           })
         }
       })
@@ -64,24 +78,30 @@ export function useReel(iframeRef, { clipSeconds } = {}) {
       playerRef.current = null
       player?.unload?.().catch(() => {})
     }
-  }, [iframeRef, clipSeconds])
+  }, [iframeRef, clipSeconds, start, end])
 
   return playerRef
 }
 
-export function ReelFrame({ className, title, clipSeconds, labelled = false }) {
+export function ReelFrame({ className, title, clipSeconds, start, end, fit, labelled = false }) {
   const iframeRef = useRef(null)
-  useReel(iframeRef, { clipSeconds })
+  useReel(iframeRef, { clipSeconds, start, end })
 
-  return (
+  const frame = (
     <iframe
       ref={iframeRef}
-      className={className}
-      src={reelSrc()}
+      className={fit ? 'reel-fit' : className}
+      src={reelSrc({ start })}
       title={title}
       tabIndex={-1}
       aria-hidden={labelled ? undefined : true}
       allow="autoplay; fullscreen; picture-in-picture"
     />
   )
+
+  if (fit === 'height') {
+    return <div className={`reel-stage${className ? ` ${className}` : ''}`}>{frame}</div>
+  }
+
+  return frame
 }
