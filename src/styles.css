@@ -2587,6 +2587,18 @@ img {
   background: #000;
 }
 
+.cta-land::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  height: 22%;
+  background: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.55) 42%, transparent 100%);
+  pointer-events: none;
+}
+
 .cta-land::after {
   content: "";
   position: absolute;
