@@ -206,14 +206,13 @@ function HomePage() {
 
   return (
     <>
+    <section className="hero">
+      <HeroScreen />
+    </section>
     <div className="page">
-
-      <section className="hero">
-        <HeroScreen />
         <div className="hero-intro">
           <p>{`That creates trailers, cinematics, cutscenes, user acquisition & marketing videos for PC, console, a nd mobile games. Heroic\u200B\u200B is a part of Room 8 Group. 60 Amazing Artists,  500+ Projects delivered`}</p>
         </div>
-      </section>
 
       <section className="section projects" id="projects">
         <div className="section-inner">
