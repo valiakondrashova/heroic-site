@@ -53,8 +53,14 @@ export function useReel(iframeRef, { clipSeconds, start, end } = {}) {
   useEffect(() => {
     let dead = false
     let player = null
+    let viewObserver = null
     const from = start ?? 0
     const to = end ?? clipSeconds ?? null
+
+    const onScreen = (node) => {
+      const rect = node.getBoundingClientRect()
+      return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight
+    }
 
     loadPlayerApi()
       .then((Vimeo) => {
@@ -74,22 +80,26 @@ export function useReel(iframeRef, { clipSeconds, start, end } = {}) {
           if (dead) return
           player.setMuted(true).catch(() => {})
           player.setAutopause(false).catch(() => {})
-          player.getCurrentTime().then((seconds) => {
-            if (dead) return
-            const inside = seconds >= from && (to == null || seconds < to)
-            if (inside || !from) {
-              player.play().catch(() => {})
-              return
-            }
-            node.style.visibility = 'hidden'
-            player.setCurrentTime(from).then(() => player.play()).catch(() => {}).finally(reveal)
-          }).catch(() => player.play().catch(() => {}))
+          player.play().catch(() => {})
         }
         player.ready().then(arm).catch(arm)
         if (to != null) {
+          const resume = () => {
+            if (!dead && node && onScreen(node)) player.play().catch(() => {})
+          }
+          player.on('pause', resume)
+          viewObserver = new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) resume()
+          }, { threshold: 0.2 })
+          viewObserver.observe(node.parentElement || node)
           let seeking = false
+          let armed = false
           player.on('timeupdate', ({ seconds }) => {
             if (dead || seeking) return
+            if (!armed) {
+              if (seconds >= from && seconds < to) armed = true
+              return
+            }
             if (seconds < to) return
             seeking = true
             node.style.visibility = 'hidden'
@@ -112,13 +122,13 @@ export function useReel(iframeRef, { clipSeconds, start, end } = {}) {
               })
             }
             player.setCurrentTime(from).then(() => player.play()).catch(() => {})
-            window.setTimeout(finish, 120)
+            window.setTimeout(finish, 80)
             window.setTimeout(() => {
               if (finished || dead) return
               finished = true
               reveal()
               seeking = false
-            }, 1600)
+            }, 500)
           })
         }
       })
@@ -126,8 +136,10 @@ export function useReel(iframeRef, { clipSeconds, start, end } = {}) {
 
     return () => {
       dead = true
+      viewObserver?.disconnect()
       playerRef.current = null
       player?.off?.('timeupdate')
+      player?.off?.('pause')
       player?.unload?.().catch(() => {})
     }
   }, [iframeRef, clipSeconds, start, end])
@@ -155,137 +167,38 @@ function ReelSingle({ className, title, clipSeconds, start, end, fit, labelled }
   return frame
 }
 
-function bindStage(stage, onChange) {
-  if (!stage) return () => {}
-  let last = null
-  const update = () => {
-    const menu = stage.closest('.menu')
-    const rect = stage.getBoundingClientRect()
-    const visible = (!menu || menu.classList.contains('menu--open'))
-      && rect.width > 0
-      && rect.height > 0
-      && rect.bottom > 0
-      && rect.top < window.innerHeight
-    if (visible === last) return
-    last = visible
-    onChange(visible)
-  }
-  const observer = new IntersectionObserver(update, { threshold: [0, 0.01, 0.25] })
-  observer.observe(stage)
-  const menu = stage.closest('.menu')
-  const menuObserver = menu ? new MutationObserver(update) : null
-  menuObserver?.observe(menu, { attributes: true, attributeFilter: ['class'] })
-  window.addEventListener('scroll', update, true)
-  window.addEventListener('resize', update)
-  update()
-  return () => {
-    observer.disconnect()
-    menuObserver?.disconnect()
-    window.removeEventListener('scroll', update, true)
-    window.removeEventListener('resize', update)
-  }
-}
-
-function ReelPair({ title, start, end, labelled }) {
-  const firstRef = useRef(null)
-  const secondRef = useRef(null)
-
-  useEffect(() => {
-    const nodes = [firstRef.current, secondRef.current]
-    let dead = false
-    let players = []
-    let active = 0
-    let busy = false
-
-    const park = (player) => player.setCurrentTime(start).then(() => player.pause()).catch(() => {})
-
-    loadPlayerApi()
-      .then((Vimeo) => {
-        if (dead || nodes.some((node) => !node)) return
-        players = nodes.map((node) => new Vimeo.Player(node))
-        if (dead) {
-          players.forEach((player) => player.unload().catch(() => {}))
-          players = []
-          return
-        }
-
-        let readyCount = 0
-        players.forEach((player, index) => {
-          player.setAutopause(false).catch(() => {})
-          player.ready().then(() => {
-            if (dead) return
-            player.setMuted(true).catch(() => {})
-            player.setAutopause(false).catch(() => {})
-            readyCount += 1
-            if (readyCount < players.length) return
-            players[0].setCurrentTime(start).then(() => players[0].play()).catch(() => players[0].play().catch(() => {}))
-            park(players[1])
-          }).catch(() => {})
-
-          player.on('timeupdate', ({ seconds }) => {
-            if (dead || busy || index !== active || seconds < end) return
-            busy = true
-            const next = index ^ 1
-            const standby = players[next]
-            standby.getCurrentTime()
-              .then((at) => {
-                if (dead) return
-                if (at > start + 0.35) return park(standby)
-                return standby.play().then(() => {
-                  if (dead) return
-                  nodes[index].style.visibility = 'hidden'
-                  nodes[next].style.visibility = ''
-                  active = next
-                  return park(player)
-                })
-              })
-              .catch(() => {})
-              .finally(() => {
-                busy = false
-              })
-          })
-        })
-      })
-      .catch(() => {})
-
-    return () => {
-      dead = true
-      players.forEach((player) => {
-        player.off?.('timeupdate')
-        player.unload?.().catch(() => {})
-      })
-    }
-  }, [start, end])
+function ClipIframe({ title, start, end, labelled }) {
+  const iframeRef = useRef(null)
+  useReel(iframeRef, { start, end })
 
   return (
-    <>
-      <iframe
-        ref={firstRef}
-        className="reel-fit"
-        src={reelSrc({ start })}
-        {...iframeProps(title, labelled)}
-      />
-      <iframe
-        ref={secondRef}
-        className="reel-fit"
-        src={reelSrc({ start })}
-        {...iframeProps('', false)}
-        style={{ visibility: 'hidden' }}
-      />
-    </>
+    <iframe
+      ref={iframeRef}
+      className="reel-fit"
+      src={reelSrc({ start, autoplay: true })}
+      {...iframeProps(title, labelled)}
+    />
   )
 }
 
-// Two players so a short loop cuts forward instead of scrubbing backward through frames.
 function ReelCut({ className, title, start, end, labelled }) {
   const stageRef = useRef(null)
-  const [shown, setShown] = useState(false)
+  const [shown, setShown] = useState(true)
 
-  useEffect(() => bindStage(stageRef.current, setShown), [])
+  useEffect(() => {
+    const stage = stageRef.current
+    const menu = stage?.closest('.menu')
+    if (!menu) return undefined
+    const sync = () => setShown(menu.classList.contains('menu--open'))
+    sync()
+    const observer = new MutationObserver(sync)
+    observer.observe(menu, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <div ref={stageRef} className={`reel-stage${className ? ` ${className}` : ''}`}>
-      {shown ? <ReelPair title={title} start={start} end={end} labelled={labelled} /> : null}
+      {shown ? <ClipIframe title={title} start={start} end={end} labelled={labelled} /> : null}
     </div>
   )
 }
