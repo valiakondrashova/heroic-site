@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react'
 import { Link, navigate } from './nav.jsx'
+import { ReelFrame } from './Reel.jsx'
 
 const TITLE = 'Start your journey with Heroic'
 const LABEL = 'get in touch'
@@ -99,7 +100,7 @@ export function CtaRing() {
 export function CtaLandscape() {
   return (
     <section className="cta-land" aria-hidden="true">
-      <img className="cta-land-bg" src="/assets/cta-landscape.png" alt="" />
+      <ReelFrame className="cta-land-bg" title="Heroic showreel" clipSeconds={12} />
     </section>
   )
 }

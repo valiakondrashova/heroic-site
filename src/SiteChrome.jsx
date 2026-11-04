@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useRoute } from './nav.jsx'
 import { CtaLandscape } from './CtaVariants.jsx'
+import { ReelFrame } from './Reel.jsx'
 import { SynergyVariantOne } from './SynergyVariants.jsx'
 import { servicePages } from './services.js'
 
@@ -132,7 +133,7 @@ function BrandFooter() {
         <div className="footer-left">
           <div className="footer-ring">
             <div className="ring-shot" aria-hidden="true">
-              <img src="/assets/menu-reel.jpg" alt="" />
+              <ReelFrame title="Heroic showreel" clipSeconds={12} />
             </div>
             <Logo className="site-logo site-logo--footer" />
           </div>

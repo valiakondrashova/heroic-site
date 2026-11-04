@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { reelSrc, useReel } from './Reel.jsx'
 import Menu from './Menu.jsx'
 import { useRoute } from './nav.jsx'
 import { SiteHeader, SiteFooter } from './SiteChrome.jsx'
@@ -147,6 +148,58 @@ export default function App() {
   )
 }
 
+function HeroScreen() {
+  const iframeRef = useRef(null)
+  const playerRef = useReel(iframeRef)
+  const [muted, setMuted] = useState(true)
+  const [paused, setPaused] = useState(false)
+
+  const toggleMute = () => {
+    const player = playerRef.current
+    if (!player) return
+    const next = !muted
+    player.setMuted(next).then(() => setMuted(next)).catch(() => {})
+  }
+
+  const togglePause = () => {
+    const player = playerRef.current
+    if (!player) return
+    const next = !paused
+    const action = next ? player.pause() : player.play()
+    action.then(() => setPaused(next)).catch(() => {})
+  }
+
+  return (
+    <div className="hero-screen">
+      <div className="hero-bg">
+        <iframe
+          ref={iframeRef}
+          src={reelSrc()}
+          title="Heroic showreel"
+          tabIndex={-1}
+          allow="autoplay; fullscreen; picture-in-picture"
+        />
+      </div>
+      <div className="hero-title">
+        <p>We are Heroic</p>
+        <p>The video production studio </p>
+      </div>
+      <div className="hero-controls">
+        <button className="hero-mute" type="button" aria-label={muted ? 'Unmute' : 'Mute'} aria-pressed={muted} onClick={toggleMute}>
+          <span className="glyph hero-controls-icon" style={{ '--glyph': "url('/assets/control-volume.svg')" }} />
+        </button>
+        <button className="hero-pause" type="button" aria-label={paused ? 'Play' : 'Pause'} aria-pressed={paused} onClick={togglePause}>
+          <span className="hero-pause-icon" aria-hidden>
+            <span className="hero-pause-bar-left" />
+            <span className="hero-pause-bar-right" />
+          </span>
+          <span className="hero-pause-text">{paused ? 'play' : 'pause'}</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function HomePage() {
   const [caseImage, setCaseImage] = useState(null)
   const moreImage = projects.find((project) => project.image !== caseImage)?.image
@@ -155,27 +208,7 @@ function HomePage() {
     <div className="page">
 
       <section className="hero">
-        <div className="hero-screen">
-          <div className="hero-bg">
-            <img src="/assets/sh10.jpg" alt="" fetchPriority="high" decoding="async" />
-          </div>
-          <div className="hero-title">
-            <p>We are Heroic</p>
-            <p>The video production studio </p>
-          </div>
-          <div className="hero-controls">
-            <button className="hero-mute" type="button" aria-label="Mute">
-              <span className="glyph hero-controls-icon" style={{ '--glyph': "url('/assets/control-volume.svg')" }} />
-            </button>
-            <button className="hero-pause" type="button">
-              <span className="hero-pause-icon" aria-hidden>
-                <span className="hero-pause-bar-left" />
-                <span className="hero-pause-bar-right" />
-              </span>
-              <span className="hero-pause-text">pause</span>
-            </button>
-          </div>
-        </div>
+        <HeroScreen />
         <div className="hero-intro">
           <p>{`That creates trailers, cinematics, cutscenes, user acquisition & marketing videos for PC, console, a nd mobile games. Heroic\u200B\u200B is a part of Room 8 Group. 60 Amazing Artists,  500+ Projects delivered`}</p>
         </div>
