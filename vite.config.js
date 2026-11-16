@@ -12,11 +12,11 @@ const builtPage = `<!doctype html>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Heroic — Video Production Studio</title>
-    <link rel="stylesheet" href="./assets/style.css">
+    <link rel="stylesheet" href="./assets/style.css?v=20261116">
   </head>
   <body>
     <div id="root"></div>
-    <script src="./assets/app.js"></script>
+    <script src="./assets/app.js?v=20261116"></script>
   </body>
 </html>
 `
