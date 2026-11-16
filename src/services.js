@@ -62,7 +62,7 @@ export const servicePages = [
   {
     slug: 'in-game-cutscenes',
     title: 'In-game cutscenes',
-    lead: 'Create story-driven in-game cutscenes in Unreal Engine, combining deep engine knowledge with film-production experience. We understand both cinematic storytelling and the game it has to live inside—so story and gameplay work together to create an integrated, immersive player experience.',
+    lead: 'Create story-driven in-game cutscenes in Unreal Engine, combining deep engine knowledge with film-production experience.',
     expertise: [
       'Unreal mastery',
       'Actors casting',
@@ -89,7 +89,7 @@ export const servicePages = [
   {
     slug: 'gameplay-trailers',
     title: 'Gameplay trailers',
-    lead: 'We provide an end-to-end, engine-agnostic trailer solution to showcase any in-game features. Our deep knowledge of various game engines allows us to work on your game at any stage of production.',
+    lead: 'We provide an end-to-end, engine-agnostic trailer solution to showcase any in-game features.',
     expertise: [
       'Any in-game engines (Unity / Unreal / proprietary engines)',
       'Support from wider Room 8 Group tech team',
@@ -112,7 +112,7 @@ export const servicePages = [
   {
     slug: 'trailers-cinematics',
     title: 'Trailers & cinematics',
-    lead: 'We deliver high-quality, end-to-end cinematic trailers across any production pipeline (Maya, Unreal, Cinema 4D). Our network of top directors ensures we meet specific project needs with precision.',
+    lead: 'We deliver high-quality, end-to-end cinematic trailers across any production pipeline (Maya, Unreal, Cinema 4D).',
     expertise: [
       'Work on any pipeline',
       'Mocap / performance capture / scanning',

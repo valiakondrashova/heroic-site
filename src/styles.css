@@ -5218,6 +5218,7 @@ img {
 }
 
 .svc-hero--fig h1 {
+  color: #fff;
   font-size: 24px;
   line-height: 1.1;
   letter-spacing: -0.96px;
@@ -5301,7 +5302,7 @@ img {
 }
 
 .svc-fig .svc-know-col:first-child .svc-flow {
-  margin-top: 16px;
+  margin-top: auto;
 }
 
 .svc-fig .svc-know-col .svc-kicker {
