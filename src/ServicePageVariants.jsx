@@ -1,14 +1,29 @@
 import { whyChooseUs } from './services.js'
+import { ProjectMedia } from './ProjectMedia.jsx'
 
-function PlayReel({ image, size, onOpen }) {
+function PlayReel({ clip, onOpen }) {
   return (
     <button
       type="button"
-      className={`svc-reel svc-reel--${size}`}
+      className="svc-reel svc-reel--half"
       aria-label="Play video"
-      onClick={() => onOpen(image)}
+      onClick={() => onOpen(clip)}
     >
-      <img src={image} alt="" />
+      {clip.story ? (
+        <span className={`story-cover story-cover--${clip.story}`}>
+          <img className="story-cover-bg" src="/assets/story-bg.png" alt="" />
+          <span className="story-cover-board">
+            <img src={clip.image} alt="" />
+          </span>
+        </span>
+      ) : (
+        <ProjectMedia
+          className="svc-reel-media"
+          image={clip.image}
+          video={clip.video}
+          title={clip.title}
+        />
+      )}
       <span className="svc-play" aria-hidden>
         <span className="glyph" style={{ '--glyph': "url('/assets/service-play.svg')" }} />
       </span>
@@ -17,7 +32,7 @@ function PlayReel({ image, size, onOpen }) {
 }
 
 export function ServiceWorkSelected({ service, onOpen }) {
-  const stills = service.videos.slice(0, 2)
+  const stills = service.clips.slice(0, 2)
 
   return (
     <section className="svc-work svc-fig">
@@ -48,8 +63,8 @@ export function ServiceWorkSelected({ service, onOpen }) {
         </div>
       </div>
       <div className="svc-stills">
-        {stills.map((image) => (
-          <PlayReel key={image} image={image} size="half" onOpen={onOpen} />
+        {stills.map((clip) => (
+          <PlayReel key={clip.id} clip={clip} onOpen={onOpen} />
         ))}
       </div>
     </section>
@@ -79,8 +94,8 @@ export function WhyChooseUs() {
             {['Game development', 'Technology', 'Art', 'QA'].map((item) => (
               <li key={item}>
                 {item}
-                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
-                  <path d="M1 5H13M13 5L9 1M13 5L9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 12V13H13V12V11H3V12ZM22 12L12 6.2265V17.7735L22 12Z" fill="currentColor" />
                 </svg>
               </li>
             ))}

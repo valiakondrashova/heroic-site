@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { CaseInfoVariantOne } from './CaseStudyVariants.jsx'
+import { ProjectMedia } from './ProjectMedia.jsx'
 
-export default function CaseStudy({ open, image, moreImage, onClose }) {
+export default function CaseStudy({ open, project, moreImage, onClose }) {
+  const image = project?.image
+  const extras = project?.extras || []
   const [paused, setPaused] = useState(true)
 
   useEffect(() => {
@@ -61,8 +64,21 @@ export default function CaseStudy({ open, image, moreImage, onClose }) {
 
           <div className="case-study-more">
             <p>More videos</p>
-            <div className="case-study-more-thumb">
-              <img src={moreImage || image} alt="" />
+            <div className="case-study-more-list">
+              {extras.map((extra) => (
+                <ProjectMedia
+                  key={extra.id}
+                  className="case-study-more-thumb"
+                  image={extra.image}
+                  video={extra.video}
+                  title={extra.title}
+                />
+              ))}
+              {moreImage && (
+                <div className="case-study-more-thumb">
+                  <img src={moreImage} alt="" />
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -19,7 +19,7 @@ function loadPlayerApi() {
   return playerApi
 }
 
-export function reelSrc({ start, autoplay = true } = {}) {
+export function reelSrc({ start, autoplay = true, id = VIDEO_ID } = {}) {
   const params = new URLSearchParams({
     autoplay: autoplay ? '1' : '0',
     loop: '1',
@@ -35,7 +35,7 @@ export function reelSrc({ start, autoplay = true } = {}) {
     background: '1',
   })
   const hash = start ? `#t=${start}s` : ''
-  return `https://player.vimeo.com/video/${VIDEO_ID}?${params}${hash}`
+  return `https://player.vimeo.com/video/${id}?${params}${hash}`
 }
 
 function iframeProps(title, labelled) {
@@ -147,7 +147,7 @@ export function useReel(iframeRef, { clipSeconds, start, end } = {}) {
   return playerRef
 }
 
-function ReelSingle({ className, title, clipSeconds, start, end, fit, labelled }) {
+function ReelSingle({ className, title, clipSeconds, start, end, fit, labelled, videoId }) {
   const iframeRef = useRef(null)
   useReel(iframeRef, { clipSeconds, start, end })
 
@@ -155,7 +155,7 @@ function ReelSingle({ className, title, clipSeconds, start, end, fit, labelled }
     <iframe
       ref={iframeRef}
       className={fit ? 'reel-fit' : className}
-      src={reelSrc({ start })}
+      src={reelSrc({ start, id: videoId })}
       {...iframeProps(title, labelled)}
     />
   )
@@ -203,7 +203,7 @@ function ReelCut({ className, title, start, end, labelled }) {
   )
 }
 
-export function ReelFrame({ className, title, clipSeconds, start, end, fit, labelled = false }) {
+export function ReelFrame({ className, title, clipSeconds, start, end, fit, labelled = false, videoId }) {
   const to = end ?? clipSeconds ?? null
   if (to != null) {
     return (
@@ -226,6 +226,7 @@ export function ReelFrame({ className, title, clipSeconds, start, end, fit, labe
       end={end}
       fit={fit}
       labelled={labelled}
+      videoId={videoId}
     />
   )
 }

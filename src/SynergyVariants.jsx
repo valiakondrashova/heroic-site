@@ -18,14 +18,8 @@ function Plus() {
 
 function ArrowRight() {
   return (
-    <svg className="synv1-arrow-icon" width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden>
-      <path
-        d="M1 5H13M13 5L9 1M13 5L9 9"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg className="synv1-arrow-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M3 12V13H13V12V11H3V12ZM22 12L12 6.2265V17.7735L22 12Z" fill="currentColor" />
     </svg>
   )
 }

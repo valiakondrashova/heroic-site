@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from './nav.jsx'
 
 const LABEL = 'Our services'
@@ -30,10 +31,10 @@ const services = [
     tags: [
       'Capture team',
       'Sound design',
-      'Editing',
       'Visual effect animation',
-      'Motion design',
       'Title cards creation',
+      'Motion design',
+      'Editing',
     ],
   },
   {
@@ -43,12 +44,12 @@ const services = [
     tags: [
       'Creating assets',
       'Environment setup',
+      'Visual effect animation',
+      'Motion capture',
+      'Compositing',
       'Postproduction editing',
       'Sound design',
-      'Compositing',
       'Rigging & key-frame animation',
-      'Motion capture',
-      'Visual effect animation',
     ],
   },
   {
@@ -58,33 +59,60 @@ const services = [
     tags: [
       '2D Motion graphics creation & animation',
       'Localization',
-      'Gameplay capture',
-      'Resizing',
       'In-game assets adaptation for trailers (2D/3D/animation/VFXs)',
+      'Gameplay capture',
       'Fake gameplay creation',
+      'Resizing',
     ],
   },
 ]
 
-function LinkArrow() {
+function ArrowMark() {
   return (
-    <svg width="11" height="10" viewBox="0 0 11 10" fill="none" aria-hidden="true">
-      <path d="M1.18462 10L0 8.92308L8.12308 1.53846H0.846154V0H11V9.23077H9.30769V2.61538L1.18462 10Z" fill="currentColor" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M3 12V13H13V12V11H3V12ZM22 12L12 6.2265V17.7735L22 12Z" fill="currentColor" />
     </svg>
   )
 }
 
-function ArrowRight() {
+function ServiceFilmRow({ svc }) {
+  const [spot, setSpot] = useState(null)
+
   return (
-    <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden>
-      <path
-        d="M1 5H13M13 5L9 1M13 5L9 9"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <Link
+      className="svo-row svo-row--film"
+      href={`/services/${svc.slug}`}
+      onMouseMove={(e) => setSpot({ x: e.clientX, y: e.clientY })}
+      onMouseLeave={() => setSpot(null)}
+    >
+      <p className="svo-title">
+        {svc.slug === 'user-acquisition-videos' ? (
+          <>
+            User acquisition
+            <br />
+            videos
+          </>
+        ) : (
+          svc.title
+        )}
+      </p>
+      <div className="svo-side">
+        <p className="svo-flow">
+          {svc.tags.map((tag, index) => (
+            <span key={tag}>
+              {index > 0 && <i aria-hidden="true" />}
+              {tag}
+            </span>
+          ))}
+        </p>
+      </div>
+      {spot && (
+        <span className="project-cursor" style={{ left: spot.x, top: spot.y }}>
+          <img src="/assets/learn-more-figma.svg" alt="" />
+          Learn more
+        </span>
+      )}
+    </Link>
   )
 }
 
@@ -95,27 +123,7 @@ export function ServicesFilm() {
         <p className="section-label">Our services</p>
         <div className="svo-list">
           {services.map((svc) => (
-            <Link
-              key={svc.slug}
-              className="svo-row svo-row--film"
-              href={`/services/${svc.slug}`}
-            >
-              <p className="svo-title">{svc.title}</p>
-              <div className="svo-side">
-                <p className="svo-flow">
-                  {svc.tags.map((tag, index) => (
-                    <span key={tag}>
-                      {index > 0 && <i aria-hidden="true" />}
-                      {tag}
-                    </span>
-                  ))}
-                </p>
-                <span className="svo-more">
-                  Learn more
-                  <ArrowRight />
-                </span>
-              </div>
-            </Link>
+            <ServiceFilmRow key={svc.slug} svc={svc} />
           ))}
         </div>
       </div>
@@ -138,7 +146,7 @@ export function ServicesVariantOne({ excludeSlug, label = LABEL, titlesOnly = fa
               {items.map((svc) => (
                 <Link key={svc.slug} className="svv-link" href={`/services/${svc.slug}`}>
                   {svc.title}
-                  <LinkArrow />
+                  <ArrowMark />
                 </Link>
               ))}
             </div>
@@ -152,7 +160,7 @@ export function ServicesVariantOne({ excludeSlug, label = LABEL, titlesOnly = fa
               >
                 <span className="svv-index-title">{svc.title}</span>
                 <span className="svv-index-meta">{svc.tags.join(' · ')}</span>
-                <ArrowRight />
+                <ArrowMark />
               </Link>
             ))}
           </div>
@@ -178,7 +186,7 @@ export function ServicesVariantOne({ excludeSlug, label = LABEL, titlesOnly = fa
                 <p className="svv1-title">{svc.title}</p>
                 <span className="svv1-cta">
                   View service
-                  <ArrowRight />
+                  <ArrowMark />
                 </span>
               </div>
               <ul className="svv1-tags">

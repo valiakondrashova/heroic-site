@@ -5,7 +5,7 @@ import { TeamVariantThree, TimeZones } from './ContactVariants.jsx'
 export default function ContactPage() {
   return (
     <div className="page page--inner">
-      <ApplyFormVariantOne title="Start your journey with Heroic" heading="h1" lede={false} clipStart={65} clipEnd={66} />
+      <ApplyFormVariantOne title="Start your journey with Heroic" heading="h1" lede={false} clipStart={65} clipEnd={66} fields="contact" />
       <TeamVariantThree />
       <TimeZones />
       <SiteFooter variant="brand" cta={false} />

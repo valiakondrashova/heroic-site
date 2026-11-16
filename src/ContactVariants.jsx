@@ -109,86 +109,70 @@ export function TeamVariantThree() {
   )
 }
 
-const MAP_W = 1024
-const MAP_H = 540
-
 const geoPlaces = [
-  { name: 'USA', zone: '−8', x: 189.4, y: 170.2, kind: 'lead' },
-  { name: 'Canada', zone: '−5', x: 283.0, y: 151.5, kind: 'both' },
-  { name: 'Brazil', zone: '−3', x: 378.0, y: 405.7, kind: 'prod' },
-  { name: 'UK', zone: '+0', x: 504.2, y: 133.8, kind: 'lead' },
-  { name: 'Spain', zone: '+1', x: 508.6, y: 160.4, kind: 'prod' },
-  { name: 'Poland', zone: '+1', x: 577.0, y: 115.4, kind: 'prod' },
-  { name: 'Ukraine', zone: '+2', x: 603.0, y: 124.2, kind: 'prod' },
-  { name: 'Romania', zone: '+2', x: 587.5, y: 151.0, kind: 'prod' },
-  { name: 'Cyprus', zone: '+2', x: 603.7, y: 178.8, kind: 'prod' },
+  { name: 'USA', x: 22, y: 42, kind: 'lead', label: { x: 2.2, y: 5 } },
+  { name: 'Canada', x: 34, y: 32, kind: 'lead' },
+  { name: 'Canada', x: 37.5, y: 36, kind: 'prod', label: { x: 2, y: 1 } },
+  { name: 'Brazil', x: 38, y: 72, kind: 'prod', label: { x: 2, y: 1 } },
+  { name: 'UK', x: 58, y: 34, kind: 'lead', label: { x: -4.5, y: -1 } },
+  { name: 'Spain', x: 56, y: 42, kind: 'prod', label: { x: -6, y: 2, anchor: 'end' } },
+  { name: 'Poland', x: 64, y: 32, kind: 'prod', label: { x: 1.6, y: -2 } },
+  { name: 'Ukraine', x: 68, y: 36, kind: 'prod', label: { x: 1.8, y: 0.5 } },
+  { name: 'Romania', x: 64, y: 40, kind: 'prod', label: { x: -1, y: 4 } },
+  { name: 'Cyprus', x: 66, y: 48, kind: 'prod', label: { x: 1.8, y: 1 } },
 ]
 
-function RoleMarks({ kind }) {
-  const roles = kind === 'both' ? ['prod', 'lead'] : [kind]
-  return (
-    <span className="geo-card-roles">
-      {roles.map((role) => (
-        <span key={role} className="geo-card-role">
-          <i className={`geo-swatch geo-swatch--${role === 'lead' ? 'lead' : 'prod'}`} />
-          {role === 'lead' ? 'Leadership' : 'Production'}
-        </span>
-      ))}
-    </span>
-  )
-}
-
-function MapPin({ place }) {
-  const prod = '#AD87FF'
-  const lead = '#fff'
-  if (place.kind === 'both') {
-    return (
-      <g>
-        <circle cx={place.x} cy={place.y} r="7.2" fill={prod} opacity="0.28" />
-        <circle cx={place.x} cy={place.y} r="3.6" fill={lead} stroke={prod} strokeWidth="1.35" />
-      </g>
-    )
+const geoHours = Array.from({ length: 15 }, (_, index) => {
+  const offset = index - 9
+  const clock = 12 + offset
+  return {
+    offset,
+    time: `${clock}:00`,
+    zone: offset > 0 ? `+${offset}` : `${offset}`,
+    on: [-8, -5, -3, 0, 1, 2].includes(offset),
   }
-  const color = place.kind === 'lead' ? lead : prod
-  return (
-    <g>
-      <circle cx={place.x} cy={place.y} r="6.4" fill={color} opacity="0.22" />
-      <circle cx={place.x} cy={place.y} r="3.3" fill={color} />
-    </g>
-  )
-}
+})
 
 export function TimeZones() {
   return (
     <section className="geo" aria-label="Global Expertise">
-      <header className="geo-head">
-        <h2 className="section-label">Global Expertise</h2>
-        <div className="geo-meta">
-          <p className="geo-kicker">One team, across time zones.</p>
-          <span className="geo-rule" aria-hidden="true" />
-          <ul className="geo-legend">
-            <li><i className="geo-swatch geo-swatch--prod" /> Production</li>
-            <li><i className="geo-swatch geo-swatch--lead" /> Leadership and key production roles</li>
-          </ul>
-        </div>
-      </header>
+      <h2 className="section-label">Global Expertise</h2>
       <div className="geo-map">
-        <img src="/assets/world-dots.png" alt="" />
-        <svg className="geo-pins" viewBox={`0 0 ${MAP_W} ${MAP_H}`} aria-hidden="true">
-          {geoPlaces.map((place) => (
-            <MapPin key={place.name} place={place} />
-          ))}
-        </svg>
-      </div>
-      <ul className="geo-cards">
+        <img src="/assets/global-map.svg" alt="" />
+        <div className="geo-meridians" aria-hidden="true" />
         {geoPlaces.map((place) => (
-          <li key={place.name} className="geo-card">
-            <strong>{place.name}</strong>
-            <span className="geo-utc">UTC {place.zone}</span>
-            <RoleMarks kind={place.kind} />
-          </li>
+          <span
+            key={`${place.name}-${place.kind}-${place.x}`}
+            className={`geo-pin geo-pin--${place.kind}`}
+            style={{ left: `${place.x}%`, top: `${place.y}%` }}
+          >
+            {place.label && (
+              <span
+                className="geo-pin-name"
+                style={{
+                  left: `${place.label.x}em`,
+                  top: `${place.label.y}em`,
+                  textAlign: place.label.anchor === 'end' ? 'right' : 'left',
+                }}
+              >
+                {place.name}
+              </span>
+            )}
+          </span>
         ))}
-      </ul>
+        <ul className="geo-legend">
+          <li><i className="geo-swatch geo-swatch--prod" /> Production</li>
+          <li><i className="geo-swatch geo-swatch--lead" /> Leadership and key production roles</li>
+        </ul>
+        <ol className="geo-hours">
+          {geoHours.map((hour) => (
+            <li key={hour.offset} className={hour.on ? 'is-on' : undefined}>
+              <span>{hour.time}</span>
+              <strong>{hour.zone}</strong>
+            </li>
+          ))}
+        </ol>
+      </div>
     </section>
   )
 }

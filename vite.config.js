@@ -70,8 +70,11 @@ function devEntry() {
     apply: 'serve',
     configureServer(server) {
       server.middlewares.use((req, _res, next) => {
-        const path = req.url?.split('?')[0]
-        if (path === '/' || path === '/index.html') req.url = '/src/entry.html'
+        const [path, query] = (req.url || '').split('?')
+        const asset = path.startsWith('/@') || path.startsWith('/src/') || path.startsWith('/node_modules/') || path.startsWith('/assets/') || path.startsWith('/fonts/')
+        if (!asset && !/\.[a-z0-9]+$/i.test(path)) {
+          req.url = `/src/entry.html${query ? `?${query}` : ''}`
+        }
         next()
       })
     },

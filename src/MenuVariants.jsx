@@ -21,6 +21,14 @@ const socials = [
   { label: 'LinkedIn', icon: '/assets/menu-linkedin.svg', href: '#linkedin' },
 ]
 
+function MenuArrow() {
+  return (
+    <svg className="menu-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M3 12V13H13V12V11H3V12ZM22 12L12 6.2265V17.7735L22 12Z" fill="currentColor" />
+    </svg>
+  )
+}
+
 export function MenuOriginal({ go }) {
   return (
     <section className="mnv mnv-original">
@@ -29,6 +37,7 @@ export function MenuOriginal({ go }) {
           {primary.map((item) => (
             <a key={item.label} className="menu-link" href={item.href} onClick={go(item.href)}>
               {item.label}
+              <MenuArrow />
             </a>
           ))}
         </nav>
@@ -37,6 +46,7 @@ export function MenuOriginal({ go }) {
           {services.map((item) => (
             <a key={item.label} className="menu-link menu-link--service" href={item.href} onClick={go(item.href)}>
               {item.label}
+              <MenuArrow />
             </a>
           ))}
         </nav>

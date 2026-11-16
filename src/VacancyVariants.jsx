@@ -241,6 +241,7 @@ export function ApplyFormVariantOne({
   lede = true,
   clipStart,
   clipEnd,
+  fields = 'apply',
 }) {
   const [checks, setChecks] = useConsents()
   const [file, setFile] = useState('')
@@ -262,30 +263,49 @@ export function ApplyFormVariantOne({
         </div>
 
         <form className="apv-apply-form" onSubmit={(e) => e.preventDefault()}>
-          <label className="apv-line">
-            <span>Name</span>
-            <input type="text" name="name" autoComplete="name" placeholder="Name" required />
-          </label>
-          <label className="apv-line">
-            <span>Email</span>
-            <input type="email" name="email" autoComplete="email" placeholder="Email" required />
-          </label>
-          <label className="apv-line">
-            <span>Portfolio link</span>
-            <input type="url" name="portfolio" autoComplete="url" placeholder="Portfolio link" />
-          </label>
-          <label className="apv-dropzone">
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => setFile(e.target.files?.[0]?.name || '')}
-            />
-            <span>{file || 'Upload or drag & drop files (5mb, pdf only)'}</span>
-          </label>
-          <label className="apv-line apv-line--message">
-            <span>Message</span>
-            <textarea name="message" rows={2} placeholder="Message" />
-          </label>
+          {fields === 'contact' ? (
+            <>
+              <label className="apv-line">
+                <span>Company</span>
+                <input type="text" name="company" autoComplete="organization" placeholder="Company" required />
+              </label>
+              <label className="apv-line">
+                <span>Business email</span>
+                <input type="email" name="email" autoComplete="email" placeholder="Business email" required />
+              </label>
+              <label className="apv-line apv-line--message">
+                <span>Message</span>
+                <textarea name="message" rows={3} placeholder="Message" />
+              </label>
+            </>
+          ) : (
+            <>
+              <label className="apv-line">
+                <span>Name</span>
+                <input type="text" name="name" autoComplete="name" placeholder="Name" required />
+              </label>
+              <label className="apv-line">
+                <span>Email</span>
+                <input type="email" name="email" autoComplete="email" placeholder="Email" required />
+              </label>
+              <label className="apv-line">
+                <span>Portfolio link</span>
+                <input type="url" name="portfolio" autoComplete="url" placeholder="Portfolio link" />
+              </label>
+              <label className="apv-dropzone">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => setFile(e.target.files?.[0]?.name || '')}
+                />
+                <span>{file || 'Upload or drag & drop files (5mb, pdf only)'}</span>
+              </label>
+              <label className="apv-line apv-line--message">
+                <span>Message</span>
+                <textarea name="message" rows={2} placeholder="Message" />
+              </label>
+            </>
+          )}
           <div className="apv1-consents">
             {[CONSENT_ONE, CONSENT_TWO].map((text, i) => (
               <label key={text} className="apv-check">

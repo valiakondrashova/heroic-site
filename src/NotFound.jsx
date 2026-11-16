@@ -1,16 +1,7 @@
 import { SiteFooter } from './SiteChrome.jsx'
 import { Link } from './nav.jsx'
-
-const frames = [
-  '/assets/rect15048.jpg',
-  '/assets/rect15049.jpg',
-  '/assets/rect15051.jpg',
-  '/assets/rect15052.jpg',
-  '/assets/rect15053.jpg',
-  '/assets/rect15054.jpg',
-  '/assets/rect15055.jpg',
-  '/assets/rect15056.jpg',
-]
+import { projects } from './projects.js'
+import { ProjectMedia } from './ProjectMedia.jsx'
 
 function ArrowRight() {
   return (
@@ -32,8 +23,14 @@ export default function NotFound() {
         </Link>
       </section>
       <div className="nf-strip" aria-hidden="true">
-        {frames.map((src, i) => (
-          <img key={src} className={i === 1 || i === 4 ? 'is-tall' : 'is-short'} src={src} alt="" />
+        {projects.map((project, i) => (
+          <ProjectMedia
+            key={project.id}
+            className={`nf-tile ${i === 1 || i === 4 ? 'is-tall' : 'is-short'}`}
+            image={project.image}
+            video={project.video}
+            title={project.title}
+          />
         ))}
       </div>
       <SiteFooter />

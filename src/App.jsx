@@ -15,41 +15,36 @@ import ServicePage from './ServicePage.jsx'
 import NotFound from './NotFound.jsx'
 import { BootScreen, CookieBanner } from './Overlays.jsx'
 import { servicePages } from './services.js'
+import { projects } from './projects.js'
+import { ProjectMedia } from './ProjectMedia.jsx'
 
-const projects = [
-  { size: 'large', image: '/assets/rect15049.jpg' },
-  { size: 'small', image: '/assets/rect15052.jpg' },
-  { size: 'small', image: '/assets/rect15053.jpg' },
-  { size: 'large', image: '/assets/rect15051.jpg' },
-  { size: 'large', image: '/assets/rect15048.jpg' },
-  { size: 'small', image: '/assets/rect15054.jpg' },
-  { size: 'small', image: '/assets/rect15055.jpg' },
-  { size: 'large', image: '/assets/rect15056.jpg' },
-]
-
-function ProjectCard({ size, image, onOpen }) {
+function ProjectCard({ project, onOpen }) {
   const [spot, setSpot] = useState(null)
 
   return (
     <a
-      className={`project-card project-card--${size}`}
+      className={`project-card project-card--${project.size}`}
       href="#projects"
       onMouseMove={(e) => setSpot({ x: e.clientX, y: e.clientY })}
       onMouseLeave={() => setSpot(null)}
       onClick={(e) => {
         e.preventDefault()
-        onOpen(image)
+        onOpen(project)
       }}
     >
-      <div className={`project-thumb project-thumb--${size}`}>
-        <img src={image} alt="" loading="lazy" decoding="async" />
+      <ProjectMedia
+        className={`project-thumb project-thumb--${project.size}`}
+        image={project.image}
+        video={project.video}
+        title={project.title}
+      >
         <div className="project-controls">
           <img src="/assets/control-volume.svg" alt="" />
         </div>
-      </div>
+      </ProjectMedia>
       <div className="project-caption">
-        <p className="project-caption-title">GalaGames &quot;Superior&quot;</p>
-        <p className="project-caption-sub">Gameplay Trailer</p>
+        <p className="project-caption-title">{project.title}</p>
+        <p className="project-caption-sub">{project.subtitle}</p>
       </div>
       {spot && (
         <span className="project-cursor" style={{ left: spot.x, top: spot.y }}>
@@ -69,7 +64,7 @@ function ClientRow1() {
     { logo: 'mediatonic.svg', cls: 'client-logo--mediatonic' },
     { logo: 'layer3.svg', cls: 'client-logo--foxnext' },
     { bg: 'frame880.svg' },
-    { logo: 'rect268.png', cls: 'client-logo--image' },
+    { logo: 'logo-playground.png', cls: 'client-logo--playground' },
     { logo: 'zynga.svg', cls: 'client-logo--zynga' },
     { bg: 'frame883.svg' },
   ]
@@ -201,8 +196,8 @@ function HeroScreen() {
 }
 
 function HomePage() {
-  const [caseImage, setCaseImage] = useState(null)
-  const moreImage = projects.find((project) => project.image !== caseImage)?.image
+  const [caseProject, setCaseProject] = useState(null)
+  const moreImage = projects.find((project) => project.id !== caseProject?.id)?.image
 
   return (
     <>
@@ -221,16 +216,8 @@ function HomePage() {
         <div className="projects-grid">
           {[0, 2, 4, 6].map((start) => (
             <div className="projects-row" key={start}>
-              <ProjectCard
-                size={projects[start].size}
-                image={projects[start].image}
-                onOpen={setCaseImage}
-              />
-              <ProjectCard
-                size={projects[start + 1].size}
-                image={projects[start + 1].image}
-                onOpen={setCaseImage}
-              />
+              <ProjectCard project={projects[start]} onOpen={setCaseProject} />
+              <ProjectCard project={projects[start + 1]} onOpen={setCaseProject} />
             </div>
           ))}
         </div>
@@ -246,10 +233,10 @@ function HomePage() {
 
       <SynergyVariantOne />
       <CaseStudy
-        open={Boolean(caseImage)}
-        image={caseImage}
+        open={Boolean(caseProject)}
+        project={caseProject}
         moreImage={moreImage}
-        onClose={() => setCaseImage(null)}
+        onClose={() => setCaseProject(null)}
       />
     </div>
     <SiteFooter variant="brand" cta />

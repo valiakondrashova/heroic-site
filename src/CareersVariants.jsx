@@ -1,13 +1,10 @@
 import { Link } from './nav.jsx'
+import { heroicJobs, roomJobs } from './jobs.js'
 
-const HREF = '/careers/documentation-support-specialist'
+const VACANCY = '/careers/documentation-support-specialist'
+const ROOM = 'https://room8group.com/join-the-team/'
 
-export const jobs = Array.from({ length: 6 }, (_, i) => ({
-  id: i + 1,
-  title: 'Lorem ipsum dolor sit amet consectetur',
-  location: 'Ukraine, Cyprus, Czech Republic +4',
-  mode: 'Remote',
-}))
+export const jobs = heroicJobs
 
 function ArrowRight() {
   return (
@@ -53,8 +50,8 @@ export function CareersVariantThree() {
   return (
     <section className="crv crv-cards">
       <div className="crv-grid">
-        {jobs.map((job) => (
-          <Link key={job.id} className="crv-card" href={HREF}>
+        {jobs.slice(0, 6).map((job) => (
+          <Link key={job.id} className="crv-card" href={VACANCY}>
             <JobFacts job={job} />
             <p className="crv-card-title">{job.title}</p>
             <MoreLink />
@@ -69,22 +66,14 @@ export function RoomOpportunities() {
   return (
     <section className="room-jobs" aria-labelledby="room-jobs-title">
       <div className="room-jobs-head">
-        <p id="room-jobs-title">Find more opportunities at Room 8 Group</p>
-        <a
-          className="see-jobs"
-          href="https://room8group.com/join-the-team/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span className="crv-more-hit">
-            See all jobs
-            <ArrowRight />
-          </span>
-        </a>
+        <p className="section-label">Looking for other roles?</p>
+        <h2 id="room-jobs-title">
+          At Room 8 Group, we have even more career opportunities waiting for you
+        </h2>
       </div>
       <div className="room-jobs-grid">
-        {jobs.slice(0, 3).map((job) => (
-          <Link key={job.id} className="room-job" href={HREF}>
+        {roomJobs.slice(0, 3).map((job) => (
+          <Link key={job.id} className="room-job" href={ROOM} target="_blank" rel="noreferrer">
             <img className="room-job-logo" src="/assets/r8g-logo.svg" alt="" />
             <p className="crv-card-title">{job.title}</p>
             <JobFacts job={job} />
@@ -92,6 +81,12 @@ export function RoomOpportunities() {
           </Link>
         ))}
       </div>
+      <a className="see-jobs" href={ROOM} target="_blank" rel="noreferrer">
+        <span className="crv-more-hit">
+          See all jobs
+          <ArrowRight />
+        </span>
+      </a>
     </section>
   )
 }
